@@ -107,8 +107,8 @@
         <b-form-select v-model="event" :options="eventOptions"></b-form-select>
       </div>
       <div class="col-3 text-center">
-        TBA API Key:
-        <b-form-input type="password" v-model="team"></b-form-input>
+        <!-- TBA API Key:
+        <b-form-input type="password" v-model="team"></b-form-input> -->
       </div>
       <div class="col-3 text-center">
         Last Updated: <br> {{moment(updated).format('h:mm:ssa YYYY-MMM-DD')}}
