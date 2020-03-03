@@ -232,7 +232,7 @@
       updateData: debounce(function() {
         console.log("refresh data");
         if (!this.team || !this.event || !this.tba_key) {
-          console.log("Missing needed info");
+          console.log(`Missing needed info: team:${this.team} event:${this.event} key:${this.tba_key}`);
           return;
         }
         let team = this.team;
@@ -319,6 +319,8 @@
         console.log(`tba_key changed from ${oldValue} to ${value}`);
         localStorage.setItem("tba_key", value);
         tba.defaults.headers.common['X-TBA-Auth-Key'] = value;
+
+        this.updateData()
       }
     }
 
