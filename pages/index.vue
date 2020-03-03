@@ -107,8 +107,8 @@
         <b-form-select v-model="event" :options="eventOptions"></b-form-select>
       </div>
       <div class="col-3 text-center">
-        <!-- TBA API Key:
-        <b-form-input type="password" v-model="team"></b-form-input> -->
+        TBA API Key:
+        <b-form-input type="password" v-model="tba_key"></b-form-input>
       </div>
       <div class="col-3 text-center">
         Last Updated: <br> {{moment(updated).format('h:mm:ssa YYYY-MMM-DD')}}
@@ -141,6 +141,7 @@
       return {
         team      : null,
         event     : null,
+        tba_key   : null,
         rankings  : [],
         nextMatch : {},
         matches   : [],
@@ -227,7 +228,7 @@
       },
       updateData: debounce(function() {
         console.log("refresh data");
-        if (!this.team || !this.event) {
+        if (!this.team || !this.event || !this.tba_key) {
           console.log("Missing needed info");
           return;
         }
@@ -310,6 +311,9 @@
         localStorage.setItem("teamNumber", value);
 
         this.updateData()
+      },
+      tba_key(value, oldValue) {
+        tba.defaults.headers.common['X-TBA-Auth-Key'] = value;
       }
     }
 
