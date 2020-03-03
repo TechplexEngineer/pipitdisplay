@@ -163,10 +163,10 @@
       // component's data. Changes to the components data trigger the corresponding
       // functions in the watch section.
       if (localStorage.getItem("teamNumber")) {
-        this.team = localStorage.getItem("teamNumber");
+        this.team = localStorage.getItem("teamNumber") || "4909";
       }
       if (localStorage.getItem("eventKey")) {
-        this.event = localStorage.getItem("eventKey");
+        this.event = localStorage.getItem("eventKey") || "2020nhgrs";
       }
 
       updateHandle = setInterval(this.updateData, 10*1000);
