@@ -169,6 +169,9 @@
       if (localStorage.getItem("eventKey")) {
         this.event = localStorage.getItem("eventKey") || "2020nhgrs";
       }
+      if (localStorage.getItem("tba_key")) {
+        this.tba_key = localStorage.getItem("tba_key");
+      }
 
       updateHandle = setInterval(this.updateData, 10*1000);
     },
@@ -313,6 +316,8 @@
         this.updateData()
       },
       tba_key(value, oldValue) {
+        console.log(`tba_key changed from ${oldValue} to ${value}`);
+        localStorage.setItem("tba_key", value);
         tba.defaults.headers.common['X-TBA-Auth-Key'] = value;
       }
     }
