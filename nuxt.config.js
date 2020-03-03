@@ -28,11 +28,14 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    // 'plugins/tba.js'
   ],
   /*
   ** Nuxt.js dev-modules
   */
   buildModules: [
+    // Doc: https://github.com/nuxt-community/dotenv-module
+    '@nuxtjs/dotenv'
   ],
   /*
   ** Nuxt.js modules
@@ -40,6 +43,8 @@ export default {
   modules: [
     // Doc: https://bootstrap-vue.js.org
     'bootstrap-vue/nuxt',
+    // Doc: https://axios.nuxtjs.org
+    '@nuxtjs/axios',
   ],
   /*
   ** Build configuration
