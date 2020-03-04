@@ -292,6 +292,10 @@
     },
     computed: {
       eventOptions: function () {
+        // events aren't loaded yet
+        if (!this.events) {
+          return [];
+        }
         let events = this.events.map(event => ({
           value: event.key,
           text : event.name
