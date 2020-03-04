@@ -313,14 +313,14 @@
         console.log(`team changed from ${oldValue} to ${value}`);
         localStorage.setItem("teamNumber", value);
 
-        this.updateData()
+        this.updateData();
       },
       tba_key(value, oldValue) {
         console.log(`tba_key changed from ${oldValue} to ${value}`);
         localStorage.setItem("tba_key", value);
         tba.defaults.headers.common['X-TBA-Auth-Key'] = value;
 
-        this.updateData()
+        this.updateData();
       }
     }
 
