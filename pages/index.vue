@@ -321,7 +321,7 @@
         // load the list of events for this year
         // used for the event dropdown
         tba.get(`/events/${new Date().getFullYear()}`).then((res) => {
-          return { events: res.data }
+          this.events= res.data;
         });
 
         this.updateData();
