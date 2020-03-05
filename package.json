@@ -16,8 +16,5 @@
     "bootstrap-vue": "^2.0.0",
     "moment": "^2.24.0",
     "nuxt": "^2.0.0"
-  },
-  "devDependencies": {
-    "@nuxtjs/dotenv": "^1.4.1"
   }
 }

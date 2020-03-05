@@ -147,17 +147,11 @@
         matches   : [],
         ourRank   : 'unknown',
         teamCount : 'unknown',
-        updated   : new Date()
+        updated   : new Date(),
+        events    : []
       }
     },
     async asyncData ({ params }) {
-
-      // load the list of events for this year
-      // used for the event dropdown
-      return tba.get(`/events/${new Date().getFullYear()}`)
-        .then((res) => {
-          return { events: res.data }
-        });
     },
     mounted() {
       // if we have a team number and/or event key stored, restore them into the
@@ -323,6 +317,12 @@
         console.log(`tba_key changed from ${oldValue} to ${value}`);
         localStorage.setItem("tba_key", value);
         tba.defaults.headers.common['X-TBA-Auth-Key'] = value;
+
+        // load the list of events for this year
+        // used for the event dropdown
+        tba.get(`/events/${new Date().getFullYear()}`).then((res) => {
+          return { events: res.data }
+        });
 
         this.updateData();
       }
