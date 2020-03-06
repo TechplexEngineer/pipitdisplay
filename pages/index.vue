@@ -28,7 +28,7 @@
                 :class="{myteam: isMyTeam(team)}"
                 >{{team.replace('frc','')}}</td>
 
-              <td>{{calcStatus(match)}}</td>
+              <td :class="{'text-danger': redWin(match), 'text-primary': blueWin(match)}">{{calcStatus(match)}}</td>
             </tr>
           </tbody>
         </table>
@@ -176,6 +176,30 @@
     methods: {
       calcStatus(match) {
         let out = "????";
+
+        // match not yet played
+        if (! match.actual_time) {
+          return "";
+        }
+
+        // no team filter
+        if (! this.team) {
+
+          // the actual_time can be returned before the score_breakdown is posted
+          if (! match.score_breakdown) {
+            return "...."
+          }
+          if (match.alliances.red.score > match.alliances.blue.score) {
+            out = `Red ${match.score_breakdown.red.rp} / ${match.score_breakdown.blue.rp}`;
+          } else if (match.alliances.red.score < match.alliances.blue.score) {
+            out = `Blue ${match.score_breakdown.blue.rp} / ${match.score_breakdown.red.rp}`;
+          } else {
+            out = "Tie";
+          }
+
+          return out;
+        }
+
         if (match.alliances.red.team_keys.includes(`frc${this.team}`)) {
 
           if (match.alliances.red.score > match.alliances.blue.score) {
@@ -206,7 +230,22 @@
         }
         return out;
       },
+      redWin(match) {
+        if (! match.actual_time) {
+          return false;
+        }
+        return match.alliances.red.score > match.alliances.blue.score;
+      },
+      blueWin(match) {
+        if (! match.actual_time) {
+          return false;
+        }
+        return match.alliances.blue.score > match.alliances.red.score
+      },
       formatTime(timestamp) {
+        if (! timestamp) {
+          return "--:----";
+        }
         return moment(timestamp*1000).format("h:mma");
       },
       getRanking(teamKey) {
@@ -225,8 +264,8 @@
       },
       updateData: debounce(function() {
         console.log("refresh data");
-        if (!this.team || !this.event || !this.tba_key) {
-          console.log(`Missing needed info: team:${this.team} event:${this.event} key:${this.tba_key}`);
+        if (!this.event || !this.tba_key) {
+          console.log(`Missing required info: event:${this.event} key:${this.tba_key}`);
           return;
         }
         let team = this.team;
@@ -237,6 +276,33 @@
           // console.log("rankings", JSON.stringify(res.data, null, 4));
           this.rankings = res.data.rankings;
         });
+
+        if (!this.team) {
+          console.log('No team filter set, showing all matches');
+
+          tba.get(`/event/${event}/matches`).then((res) => {
+            // sort by scheduled time
+            let matches = res.data.sort((a,b) => (a.time - b.time));
+
+            // hide qualifing matches once quarter finals start
+            // let foundQF = matches.map((m)=>(m.comp_level)).includes("qf");
+            // if (foundQF) {
+            //   matches = matches.filter((m) => (m.comp_level !== "qm"));
+            // }
+
+            this.matches = matches;
+
+            let notPlayed = matches.filter(m=>(! m.actual_time));
+
+            this.nextMatch = notPlayed.sort((a,b)=>(a.time-b.time))[0]
+
+            this.nextMatch.title = "Next Match";
+            this.nextMatch.comp_level = this.nextMatch.comp_level.toUpperCase();
+
+            // console.log("matches", JSON.stringify(, null, 4));
+          });
+          return;
+        }
 
         try {
           tba.get(`/team/frc${team}/event/${event}/matches`).then((res) => {
@@ -270,7 +336,7 @@
             } else if (res.data.last_match_key) {
               let nextMatchRes = await tba.get(`/match/${res.data.last_match_key}/simple`);
               this.nextMatch = nextMatchRes.data;
-              this.nextMatch.title = "Next Match"; //temporary @fixme for screenshots
+              this.nextMatch.title = "Last Match"; //temporary @fixme for screenshots
               this.nextMatch.comp_level = this.nextMatch.comp_level.toUpperCase();
             } else {
               this.nextMatch = {};
