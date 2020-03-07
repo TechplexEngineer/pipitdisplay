@@ -65,7 +65,12 @@
           <div class="col text-nowrap">Predicted: {{formatTime(nextMatch.predicted_time)}}</div>
         </div>
 
-        <h2 class="text-center pt-4 pb-2"><small>Countdown:</small> {{countdown(nextMatch.predicted_time)}}</h2>
+        <h2 class="text-center pt-4 pb-2"><small>Countdown:</small>
+          <VueCountdown :time="(nextMatch.predicted_time*1000 - Date.now())">
+            <template slot-scope="props">{{ props.hours }}h {{ props.minutes }}m {{ props.seconds }}s</template>
+          </VueCountdown>
+        </h2>
+
 
         <h2 class="text-center">Rankings <small class="smaller">Rank {{ourRank}} of {{teamCount}}</small></h2>
 
@@ -119,6 +124,7 @@
 </template>
 
 <script>
+  import VueCountdown from '@chenfengyuan/vue-countdown';
   import moment from 'moment';
   import tba from '~/plugins/tba.js';
 
@@ -137,6 +143,9 @@
   let updateHandle = null;
 
   export default {
+    components: {
+      VueCountdown
+    },
     data: function() {
       return {
         team      : null,
