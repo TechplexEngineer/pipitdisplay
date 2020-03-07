@@ -4,7 +4,7 @@
     <div class="row">
 
       <div class="col-8">
-        <h2 class="text-center">Matches</h2>
+        <h2 class="text-center">{{ eventName }} - Matches</h2>
         <table class="table table-striped table-dark table-borderless rounded text-center">
           <thead>
             <tr>
@@ -35,7 +35,7 @@
       </div>
 
       <div class="col-4">
-        <h2 class="text-center display-5">{{nextMatch.title}} <small class="smaller">{{nextMatch.comp_level}}#{{nextMatch.match_number}}</small></h2>
+        <h2 class="text-center display-5"> <small class="smaller" v-if="team">FRC{{ team }}</small> {{nextMatch.title}} <small class="smaller">{{nextMatch.comp_level}}#{{nextMatch.match_number}}</small></h2>
 
         <table class="table table-striped table-dark table-borderless rounded shadow-sm">
           <thead class="text-center thead-dark">
@@ -66,7 +66,7 @@
         </div>
 
         <h2 class="text-center pt-4 pb-2"><small>Countdown:</small>
-          <VueCountdown :time="(nextMatch.predicted_time*1000 - Date.now())">
+          <VueCountdown :time="nextMatch.countdown">
             <template slot-scope="props">{{ props.hours }}h {{ props.minutes }}m {{ props.seconds }}s</template>
           </VueCountdown>
         </h2>
@@ -264,10 +264,6 @@
         const team = this.rankings.filter((t)=>(t.team_key === teamKey))[0];
         return `Rank ${team.rank} / RP ${team.sort_orders[0]}`;
       },
-      countdown(timestamp) {
-        let duration = moment.duration(Date.now()-timestamp*1000, 'milliseconds');
-        return duration.humanize();
-      },
       isMyTeam(teamKey) {
         return (`frc${this.team}` == teamKey);
       },
@@ -303,8 +299,13 @@
 
             let notPlayed = matches.filter(m=>(! m.actual_time));
 
-            this.nextMatch = notPlayed.sort((a,b)=>(a.time-b.time))[0]
-
+            // current match is [0] net match is [1]
+            this.nextMatch = notPlayed.sort((a,b)=>(a.time-b.time))[1]
+            this.nextMatch.countdown = (this.nextMatch.predicted_time*1000 - Date.now());
+            if (this.nextMatch.countdown < 0) {
+              console.log("Countdown is zero");
+              this.nextMatch.countdown = 0;
+            }
             this.nextMatch.title = "Next Match";
             this.nextMatch.comp_level = this.nextMatch.comp_level.toUpperCase();
 
@@ -373,6 +374,15 @@
         events.unshift({ value: null, text: 'Please select an event' });
         return events;
         // <option v-for="event in events" name="event.key">{{ event.name }}</option>
+      },
+      eventName: function() {
+        console.log("options", this.eventOptions, this.event);
+        let events = this.eventOptions.filter(e=>(e.value==this.event));
+        console.log("events", events);
+        if (events.length) {
+          return events[0].text
+        }
+        return "";
       }
     },
     watch: {
