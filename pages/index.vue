@@ -105,7 +105,7 @@
     <!-- Data Input -->
     <div class="row text-muted">
       <div class="col-2 text-center">
-        Your Team: <b-form-input type="number" v-model="team" placeholder="####"></b-form-input>
+        Optional Team Filter: <b-form-input type="number" v-model="team" placeholder="####"></b-form-input>
       </div>
       <div class="col-4 text-center">
         Event:
@@ -157,7 +157,8 @@
         ourRank   : 'unknown',
         teamCount : 'unknown',
         updated   : new Date(),
-        events    : []
+        events    : [],
+        isFinals  : false
       }
     },
     async asyncData ({ params }) {
@@ -199,9 +200,17 @@
             return "...."
           }
           if (match.alliances.red.score > match.alliances.blue.score) {
-            out = `Red ${match.score_breakdown.red.rp} / ${match.score_breakdown.blue.rp}`;
+            out = "Red";
+            // Show the ranking points for qualification matches
+            if (match.comp_level == "qm") {
+              out += ` ${match.score_breakdown.red.rp} / ${match.score_breakdown.blue.rp}`
+            }
           } else if (match.alliances.red.score < match.alliances.blue.score) {
-            out = `Blue ${match.score_breakdown.blue.rp} / ${match.score_breakdown.red.rp}`;
+            out = "Blue";
+            // Show the ranking points for qualification matches
+            if (match.comp_level == "qm") {
+              out += ` ${match.score_breakdown.blue.rp} / ${match.score_breakdown.red.rp}`
+            }
           } else {
             out = "Tie";
           }
@@ -290,10 +299,10 @@
             let matches = res.data.sort((a,b) => (a.time - b.time));
 
             // hide qualifing matches once quarter finals start
-            // let foundQF = matches.map((m)=>(m.comp_level)).includes("qf");
-            // if (foundQF) {
-            //   matches = matches.filter((m) => (m.comp_level !== "qm"));
-            // }
+            this.isFinals = matches.map((m)=>(m.comp_level)).includes("qf");
+            if (this.isFinals) {
+              matches = matches.filter((m) => (m.comp_level !== "qm"));
+            }
 
             this.matches = matches;
 
@@ -320,10 +329,10 @@
             let matches = res.data.sort((a,b) => (a.time - b.time));
 
             // hide qualifing matches once quarter finals start
-            // let foundQF = matches.map((m)=>(m.comp_level)).includes("qf");
-            // if (foundQF) {
-            //   matches = matches.filter((m) => (m.comp_level !== "qm"));
-            // }
+            this.isFinals = matches.map((m)=>(m.comp_level)).includes("qf");
+            if (this.isFinals) {
+              matches = matches.filter((m) => (m.comp_level !== "qm"));
+            }
 
             this.matches = matches;
           });
