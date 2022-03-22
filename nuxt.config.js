@@ -1,6 +1,6 @@
 
 export default {
-  mode: 'spa',
+  ssr: false, //spa mode
   /*
   ** Headers of the page
   */
@@ -44,6 +44,8 @@ export default {
     'bootstrap-vue/nuxt',
     // Doc: https://axios.nuxtjs.org
     '@nuxtjs/axios',
+    // Doc: https://pwa.nuxtjs.org/
+    '@nuxtjs/pwa',
   ],
   /*
   ** Build configuration
