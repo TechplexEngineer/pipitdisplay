@@ -34,6 +34,7 @@ export default {
   ** Nuxt.js dev-modules
   */
   buildModules: [
+    '@nuxtjs/pwa',
   ],
   /*
   ** Nuxt.js modules
@@ -52,6 +53,14 @@ export default {
     ** You can extend webpack config here
     */
     extend (config, ctx) {
+    }
+  },
+
+  pwa: {
+    manifest: {
+      name: 'FRC Pit Display',
+      lang: 'en-us',
+      useWebmanifestExtension: false
     }
   }
 }
