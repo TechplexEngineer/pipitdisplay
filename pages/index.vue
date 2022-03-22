@@ -48,7 +48,7 @@
               <div class="col text-nowrap">Predicted: {{formatTime(nextMatch.predicted_time)}}</div>
             </div>
 
-            <h2 class="text-center pt-2 pb-2"><small>Countdown:</small>
+            <h2 class="text-center pt-2 pb-2" style="white-space: nowrap;"><small style="font-size: 75%;">Countdown:</small>
               <VueCountdown :time="nextMatch.countdown">
                 <template slot-scope="props">{{ props.hours }}h {{ props.minutes }}m {{ props.seconds }}s</template>
               </VueCountdown>
