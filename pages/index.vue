@@ -43,6 +43,17 @@
               <small class="smaller">{{nextMatch.comp_level}}#{{nextMatch.match_number}}</small>
             </h2>
 
+            <div class="row text-center">
+              <div class="col text-nowrap">Scheduled: {{formatTime(nextMatch.time)}}</div>
+              <div class="col text-nowrap">Predicted: {{formatTime(nextMatch.predicted_time)}}</div>
+            </div>
+
+            <h2 class="text-center pt-2 pb-2"><small>Countdown:</small>
+              <VueCountdown :time="nextMatch.countdown">
+                <template slot-scope="props">{{ props.hours }}h {{ props.minutes }}m {{ props.seconds }}s</template>
+              </VueCountdown>
+            </h2>
+
             <table class="table table-striped table-dark table-borderless rounded shadow-sm">
               <thead class="text-center thead-dark">
                 <tr class="rounded-top">
@@ -66,16 +77,7 @@
               </tbody>
             </table>
 
-            <div class="row text-center">
-              <div class="col text-nowrap">Scheduled: {{formatTime(nextMatch.time)}}</div>
-              <div class="col text-nowrap">Predicted: {{formatTime(nextMatch.predicted_time)}}</div>
-            </div>
-
-            <h2 class="text-center pt-4 pb-2"><small>Countdown:</small>
-              <VueCountdown :time="nextMatch.countdown">
-                <template slot-scope="props">{{ props.hours }}h {{ props.minutes }}m {{ props.seconds }}s</template>
-              </VueCountdown>
-            </h2>
+            
           </div>
           <div class="col-lg-6 col-xl-12">
             <h2 class="text-center">Rankings <small class="smaller">Rank {{ourRank}} of {{teamCount}}</small></h2>
@@ -345,7 +347,7 @@
             let matches = res.data.sort((a,b) => (a.time - b.time));
 
             // hide qualifing matches once quarter finals start
-            this.isFinals = false; //matches.map((m)=>(m.comp_level)).includes("qf");
+            this.isFinals = matches.map((m)=>(m.comp_level)).includes("qf");
             if (this.isFinals) {
               matches = matches.filter((m) => (m.comp_level !== "qm"));
             }
