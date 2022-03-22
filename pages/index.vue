@@ -50,7 +50,7 @@
 
             <h2 class="text-center pt-2 pb-2" style="white-space: nowrap;"><small style="font-size: 75%;">Countdown:</small>
               <VueCountdown :time="nextMatch.countdown">
-                <template slot-scope="props">{{ props.hours }}h {{ props.minutes }}m {{ props.seconds }}s</template>
+                <template slot-scope="props"><span v-if="props.hours>0">{{ props.hours }}h </span>{{ props.minutes }}m {{ props.seconds }}s</template>
               </VueCountdown>
               <small style="font-size: 35%;">(to {{nextMatch.countdownTo}})</small>
             </h2>
