@@ -3,7 +3,7 @@
 
     <div class="row">
 
-      <div class="col-8">
+      <div class="col-lg-12 col-xl-8">
         <h2 class="text-center">{{ eventName }} - Matches</h2>
         <table class="table table-striped table-dark table-borderless rounded text-center">
           <thead>
@@ -34,73 +34,81 @@
         </table>
       </div>
 
-      <div class="col-4">
-        <h2 class="text-center display-5"> <small class="smaller" v-if="team">FRC{{ team }}</small> {{nextMatch.title}} <small class="smaller">{{nextMatch.comp_level}}#{{nextMatch.match_number}}</small></h2>
+      <div class="col-lg-12 col-xl-4">
+        <div class="row">
+          <div class="col-lg-6 col-xl-12">
+            <h2 class="text-center display-5">
+              <small class="smaller" v-if="team">FRC{{ team }}</small>
+              {{nextMatch.title}}
+              <small class="smaller">{{nextMatch.comp_level}}#{{nextMatch.match_number}}</small>
+            </h2>
 
-        <table class="table table-striped table-dark table-borderless rounded shadow-sm">
-          <thead class="text-center thead-dark">
-            <tr class="rounded-top">
-              <th class="font-weight-bold bg-danger">Red</th>
-              <th class="font-weight-bold bg-primary">Blue</th>
-            </tr>
-          </thead>
-          <tbody class="text-center rounded-bottom">
-            <tr v-if="'alliances' in nextMatch" v-for="idx in 3">
-              <td>
-                <span :class="{myteam: isMyTeam(nextMatch.alliances.red.team_keys[idx-1])}">{{nextMatch.alliances.red.team_keys[idx-1].replace('frc', '').trim()}}</span>
-                <br>
-                <small>{{getRanking(nextMatch.alliances.red.team_keys[idx-1])}}</small>
-              </td>
-              <td>
-                <span :class="{myteam: isMyTeam(nextMatch.alliances.blue.team_keys[idx-1])}">{{nextMatch.alliances.blue.team_keys[idx-1].replace('frc','').trim()}}</span>
-                <br>
-                <small>{{getRanking(nextMatch.alliances.blue.team_keys[idx-1])}}</small>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            <table class="table table-striped table-dark table-borderless rounded shadow-sm">
+              <thead class="text-center thead-dark">
+                <tr class="rounded-top">
+                  <th class="font-weight-bold bg-danger">Red</th>
+                  <th class="font-weight-bold bg-primary">Blue</th>
+                </tr>
+              </thead>
+              <tbody class="text-center rounded-bottom">
+                <tr v-if="'alliances' in nextMatch" v-for="idx in 3">
+                  <td>
+                    <span :class="{myteam: isMyTeam(nextMatch.alliances.red.team_keys[idx-1])}">{{nextMatch.alliances.red.team_keys[idx-1].replace('frc', '').trim()}}</span>
+                    <br>
+                    <small>{{getRanking(nextMatch.alliances.red.team_keys[idx-1])}}</small>
+                  </td>
+                  <td>
+                    <span :class="{myteam: isMyTeam(nextMatch.alliances.blue.team_keys[idx-1])}">{{nextMatch.alliances.blue.team_keys[idx-1].replace('frc','').trim()}}</span>
+                    <br>
+                    <small>{{getRanking(nextMatch.alliances.blue.team_keys[idx-1])}}</small>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
-        <div class="row text-center">
-          <div class="col text-nowrap">Scheduled: {{formatTime(nextMatch.time)}}</div>
-          <div class="col text-nowrap">Predicted: {{formatTime(nextMatch.predicted_time)}}</div>
+            <div class="row text-center">
+              <div class="col text-nowrap">Scheduled: {{formatTime(nextMatch.time)}}</div>
+              <div class="col text-nowrap">Predicted: {{formatTime(nextMatch.predicted_time)}}</div>
+            </div>
+
+            <h2 class="text-center pt-4 pb-2"><small>Countdown:</small>
+              <VueCountdown :time="nextMatch.countdown">
+                <template slot-scope="props">{{ props.hours }}h {{ props.minutes }}m {{ props.seconds }}s</template>
+              </VueCountdown>
+            </h2>
+          </div>
+          <div class="col-lg-6 col-xl-12">
+            <h2 class="text-center">Rankings <small class="smaller">Rank {{ourRank}} of {{teamCount}}</small></h2>
+
+            <table class="table table-striped table-dark table-borderless rounded shadow-sm">
+              <thead class="text-center thead-dark">
+                <tr class="rounded-top">
+                  <th class="font-weight-bold bg-secondary">Rank</th>
+                  <th class="font-weight-bold bg-secondary">Team</th>
+                  <th class="bg-secondary">RP</th>
+                  <th class="bg-secondary">W-L-T</th>
+                  <th class="bg-secondary">Played</th>
+                </tr>
+              </thead>
+              <tbody class="text-center rounded-bottom">
+                <tr  v-for="team in rankings.slice(0,8)">
+                  <td>{{team.rank}}</td>
+                  <td :class="{myteam: isMyTeam(team.team_key)}">{{team.team_key.replace('frc', '')}}</td>
+                  <td>{{team.sort_orders[0]}}</td>
+                  <td>{{team.record.wins}}-{{team.record.losses}}-{{team.record.ties}}</td>
+                  <td>{{team.matches_played}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-
-        <h2 class="text-center pt-4 pb-2"><small>Countdown:</small>
-          <VueCountdown :time="nextMatch.countdown">
-            <template slot-scope="props">{{ props.hours }}h {{ props.minutes }}m {{ props.seconds }}s</template>
-          </VueCountdown>
-        </h2>
-
-
-        <h2 class="text-center">Rankings <small class="smaller">Rank {{ourRank}} of {{teamCount}}</small></h2>
-
-        <table class="table table-striped table-dark table-borderless rounded shadow-sm">
-          <thead class="text-center thead-dark">
-            <tr class="rounded-top">
-              <th class="font-weight-bold bg-secondary">Rank</th>
-              <th class="font-weight-bold bg-secondary">Team</th>
-              <th class="bg-secondary">RP</th>
-              <th class="bg-secondary">W-L-T</th>
-              <th class="bg-secondary">Played</th>
-            </tr>
-          </thead>
-          <tbody class="text-center rounded-bottom">
-            <tr  v-for="team in rankings.slice(0,8)">
-              <td>{{team.rank}}</td>
-              <td :class="{myteam: isMyTeam(team.team_key)}">{{team.team_key.replace('frc', '')}}</td>
-              <td>{{team.sort_orders[0]}}</td>
-              <td>{{team.record.wins}}-{{team.record.losses}}-{{team.record.ties}}</td>
-              <td>{{team.matches_played}}</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
 
+
+
     </div>
 
-    <div class="row pt-4">
-      <div class="col-2"></div>
-    </div>
+   
 
     <!-- Data Input -->
     <div class="row text-muted">
@@ -118,6 +126,13 @@
       <div class="col-3 text-center">
         Last Updated: <br> {{moment(updated).format('h:mm:ssa YYYY-MMM-DD')}}
       </div>
+
+      <div class="d-block d-sm-none">xs</div>
+      <div class="d-none d-sm-block d-md-none">sm</div>
+      <div class="d-none d-md-block d-lg-none">md</div>
+      <div class="d-none d-lg-block d-xl-none">lg</div>
+      <div class="d-none d-xl-block d-xxl-none">xl</div>
+      <div class="d-none d-xxl-block">xxl</div>
     </div>
 
   </div>
@@ -297,6 +312,7 @@
           tba.get(`/event/${event}/matches`).then((res) => {
             // sort by scheduled time
             let matches = res.data.sort((a,b) => (a.time - b.time));
+            console.log("matche")
 
             // hide qualifing matches once quarter finals start
             this.isFinals = matches.map((m)=>(m.comp_level)).includes("qf");
@@ -329,7 +345,7 @@
             let matches = res.data.sort((a,b) => (a.time - b.time));
 
             // hide qualifing matches once quarter finals start
-            this.isFinals = matches.map((m)=>(m.comp_level)).includes("qf");
+            this.isFinals = false; //matches.map((m)=>(m.comp_level)).includes("qf");
             if (this.isFinals) {
               matches = matches.filter((m) => (m.comp_level !== "qm"));
             }
@@ -385,9 +401,9 @@
         // <option v-for="event in events" name="event.key">{{ event.name }}</option>
       },
       eventName: function() {
-        console.log("options", this.eventOptions, this.event);
+        // console.log("options", this.eventOptions, this.event);
         let events = this.eventOptions.filter(e=>(e.value==this.event));
-        console.log("events", events);
+        // console.log("events", events);
         if (events.length) {
           return events[0].text
         }
