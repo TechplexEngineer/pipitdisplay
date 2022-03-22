@@ -52,6 +52,7 @@
               <VueCountdown :time="nextMatch.countdown">
                 <template slot-scope="props">{{ props.hours }}h {{ props.minutes }}m {{ props.seconds }}s</template>
               </VueCountdown>
+              <small style="font-size: 35%;">(to {{nextMatch.countdownTo}})</small>
             </h2>
 
             <table class="table table-striped table-dark table-borderless rounded shadow-sm">
@@ -314,7 +315,7 @@
           tba.get(`/event/${event}/matches`).then((res) => {
             // sort by scheduled time
             let matches = res.data.sort((a,b) => (a.time - b.time));
-            console.log("matche")
+            // console.log("matches", JSON.stringify(matches[0], null, 4))
 
             // hide qualifing matches once quarter finals start
             this.isFinals = matches.map((m)=>(m.comp_level)).includes("qf");
@@ -324,11 +325,13 @@
 
             this.matches = matches;
 
+            // get a list of matches that haven't been played yet
             let notPlayed = matches.filter(m=>(! m.actual_time));
 
             // current match is [0] net match is [1]
-            this.nextMatch = notPlayed.sort((a,b)=>(a.time-b.time))[1]
-            this.nextMatch.countdown = (this.nextMatch.predicted_time*1000 - Date.now());
+            this.nextMatch = notPlayed.sort((a,b)=>(a.time-b.time))[0]
+            this.nextMatch.countdown = (this.nextMatch.time*1000 - Date.now());
+            this.nextMatch.countdownTo = "scheduled";
             if (this.nextMatch.countdown < 0) {
               console.log("Countdown is zero");
               this.nextMatch.countdown = 0;
@@ -370,6 +373,24 @@
               this.nextMatch = nextMatchRes.data;
               this.nextMatch.title = "Next Match";
               this.nextMatch.comp_level = this.nextMatch.comp_level.toUpperCase();
+
+
+              let countdownTo = this.nextMatch.predicted_time
+              this.nextMatch.countdownTo = "predicted";
+              if (this.nextMatch.time > this.nextMatch.predicted_time) {
+                this.nextMatch.countdownTo = "scheduled";
+                countdownTo = this.nextMatch.time;
+              }              
+
+              this.nextMatch.countdown = (countdownTo*1000 - Date.now());
+              if (this.nextMatch.countdown < 0) {
+                console.log("Countdown is zero");
+                this.nextMatch.countdown = 0;
+              }
+
+              this.nextMatch.title = "Next Match";
+              this.nextMatch.comp_level = this.nextMatch.comp_level.toUpperCase();
+
             } else if (res.data.last_match_key) {
               let nextMatchRes = await tba.get(`/match/${res.data.last_match_key}/simple`);
               this.nextMatch = nextMatchRes.data;
